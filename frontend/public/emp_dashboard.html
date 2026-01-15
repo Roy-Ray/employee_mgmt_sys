@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Employee Portal | SmartHR</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h4 class="text-center py-4 border-bottom">
+        <i class="fas fa-user me-2"></i>Welcome Employee
+      </h4>
+
+      <a href="#" onclick="showSection('dashboard')" class="active"
+        ><i class="fas fa-home me-2"></i> Dashboard</a
+      >
+      <a href="#" onclick="showSection('profile')"
+        ><i class="fas fa-user-circle me-2"></i> My Profile</a
+      >
+      <a href="#" onclick="showSection('leaves')"
+        ><i class="fas fa-calendar-check me-2"></i> My Leaves</a
+      >
+      <a href="#" onclick="showSection('salary')"
+        ><i class="fas fa-file-invoice-dollar me-2"></i> My Salary</a
+      >
+      <a href="#" onclick="showSection('settings')"
+        ><i class="fas fa-key me-2"></i> Password</a
+      >
+
+      <a href="#" onclick="logout()" class="text-danger mt-5"
+        ><i class="fas fa-sign-out-alt me-2"></i> Logout</a
+      >
+    </div>
+
+    <div class="main-content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 id="pageTitle">My Dashboard</h2>
+        <div class="text-muted small">
+          <i class="fas fa-calendar-day me-1"></i> Have a productive day!
+        </div>
+      </div>
+
+      <div id="dashboard-section">
+        <div class="card welcome-card shadow-lg mb-4 text-white border-0" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          <div class="card-body p-5">
+            <h1 class="display-5 fw-bold">
+              Hello, <span id="userName">User</span>!
+            </h1>
+            <p class="lead opacity-75" id="userDesg">Developer</p>
+            <button
+              id="clockInBtn"
+              class="btn btn-light fw-bold px-4 py-2 mt-2 shadow-sm text-success"
+              onclick="markAttendance()"
+            >
+              🕒 Clock In Now
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-0">
+              <div class="card-header bg-white fw-bold border-bottom-0 pt-3">
+                <i class="fas fa-stopwatch me-2 text-primary"></i>Today's Status
+              </div>
+              <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h2 class="text-primary fw-bold mb-0" id="todayStatus">Not Marked</h2>
+                <p class="text-muted mt-2 mb-0" id="clockTime">--:--</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-0">
+              <div class="card-header bg-white fw-bold border-bottom-0 pt-3">
+                <i class="fas fa-chart-pie me-2 text-warning"></i>Leave Balance (Remaining)
+              </div>
+              <div class="card-body d-flex justify-content-around align-items-center">
+                <div class="text-center">
+                  <h3 id="bal_casual" class="text-primary fw-bold mb-0">--</h3>
+                  <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Casual</small>
+                </div>
+                <div class="vr text-muted opacity-25"></div>
+                <div class="text-center">
+                  <h3 id="bal_sick" class="text-danger fw-bold mb-0">--</h3>
+                  <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Sick</small>
+                </div>
+                <div class="vr text-muted opacity-25"></div>
+                <div class="text-center">
+                  <h3 id="bal_paid" class="text-success fw-bold mb-0">--</h3>
+                  <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Paid</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="profile-section" class="d-none">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+              <div class="card-header bg-primary text-white text-center py-5" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                
+                <div class="position-relative d-inline-block">
+                    <img 
+                        id="profile_img" 
+                        src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
+                        class="rounded-circle border border-4 border-white shadow-sm"
+                        style="width: 130px; height: 130px; object-fit: cover; cursor: pointer; background: white;"
+                        onclick="document.getElementById('fileInput').click()"
+                        title="Click to Edit"
+                    >
+                    <input type="file" id="fileInput" class="d-none" accept="image/*" onchange="uploadProfilePic()">
+                    
+                    <div class="position-absolute bottom-0 end-0 bg-white rounded-circle p-2 shadow-sm" style="cursor: pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-camera text-primary" style="font-size: 0.9rem;"></i>
+                    </div>
+                </div>
+
+                <h3 class="mt-3 mb-0 fw-bold" id="p_name">--</h3>
+                <p class="mb-0 opacity-75" id="p_role">--</p>
+              </div>
+              
+              <div class="card-body p-5">
+                 <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase">Email Address</label>
+                        <h5 id="p_email" class="text-dark border-bottom pb-2 mt-1">--</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase">Designation</label>
+                        <h5 id="p_desg" class="text-dark border-bottom pb-2 mt-1">--</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase">Joining Date</label>
+                        <h5 id="p_join" class="text-dark border-bottom pb-2 mt-1">--</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase">Account Status</label>
+                        <div class="mt-1"><span class="badge bg-success px-3 py-2">Active</span></div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="leaves-section" class="d-none">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+                <h5 class="fw-bold text-dark mb-0">Apply for Leave</h5>
+            </div>
+            <div class="card-body p-4">
+                <form id="leaveForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold">Type</label>
+                            <select id="l_type" class="form-select" required>
+                                <option value="Casual">Casual Leave</option>
+                                <option value="Sick">Sick Leave</option>
+                                <option value="Paid">Paid Leave</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold">Start Date</label>
+                            <input type="date" id="l_start" class="form-control" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold">End Date</label>
+                            <input type="date" id="l_end" class="form-control" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Reason</label>
+                            <input type="text" id="l_reason" class="form-control" placeholder="e.g. Not feeling well" required />
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary px-4">
+                                Submit Request
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+                <h5 class="fw-bold text-dark mb-0">My Leave History</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-uppercase small text-muted">Dates</th>
+                                <th class="text-uppercase small text-muted">Type</th>
+                                <th class="text-uppercase small text-muted">Reason</th>
+                                <th class="text-uppercase small text-muted">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myLeaveTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div id="salary-section" class="d-none">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white fw-bold">
+            <i class="fas fa-file-invoice me-2 text-success"></i>Salary Slips
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Month</th>
+                            <th>Base Salary</th>
+                            <th class="text-success">OT Bonus</th>
+                            <th class="text-danger">Tax/Ded</th>
+                            <th>Net Pay</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mySalaryTable"></tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-section" class="d-none">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white fw-bold text-center py-3">
+                        <i class="fas fa-lock me-2 text-warning"></i>Change Password
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="passwordForm">
+                            <label class="form-label small fw-bold text-muted">NEW PASSWORD</label>
+                            <input
+                                type="password"
+                                id="new_pass"
+                                class="form-control mb-3"
+                                placeholder="Enter new password"
+                                required
+                            />
+                            <button type="submit" class="btn btn-warning w-100 fw-bold text-white">
+                                Update Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="logoutOverlay"
+      class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center"
+      style="z-index: 9999; backdrop-filter: blur(5px);"
+    >
+      <div class="bg-white p-5 rounded-4 shadow-lg text-center">
+        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+        <h3 class="fw-bold">Logging Out...</h3>
+        <p class="text-muted">See you soon!</p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/employee.js"></script>
+  </body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard | SmartHR</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h4 class="text-center py-4 border-bottom">
+        <i class="fas fa-user-shield me-2"></i>Welcome Admin
+      </h4>
+
+      <a href="#" onclick="showSection('analytics')" class="active"
+        ><i class="fas fa-chart-pie"></i> Analytics</a
+      >
+      <a href="#" onclick="showSection('employees')"
+        ><i class="fas fa-users"></i> Employees</a
+      >
+      <a href="#" onclick="showSection('attendance')"
+        ><i class="fas fa-clock"></i> Attendance</a
+      >
+      <a href="#" onclick="showSection('leaves')"
+        ><i class="fas fa-calendar-alt"></i> Leave Mgmt</a
+      >
+      <a href="#" onclick="showSection('payroll')"
+        ><i class="fas fa-money-bill-wave"></i> Payroll</a
+      >
+      <a href="#" onclick="showSection('settings')"
+        ><i class="fas fa-sliders-h"></i> Settings</a
+      >
+
+      <a href="#" onclick="logout()" class="text-danger mt-5"
+        ><i class="fas fa-sign-out-alt"></i> Logout</a
+      >
+    </div>
+
+    <div class="main-content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 id="pageTitle">Company Overview</h2>
+        <div class="text-muted small">
+          <i class="fas fa-calendar-day me-1"></i> Today is a great day
+        </div>
+      </div>
+
+      <div id="analytics-section">
+        <div class="row g-4">
+          <div class="col-md-3">
+            <div class="dashboard-card card-1">
+              <h5>Total Employees</h5>
+              <h2 id="stat_total_emp">--</h2>
+              <i class="fas fa-users"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="dashboard-card card-2">
+              <h5>Present Today</h5>
+              <h2 id="stat_present">--</h2>
+              <i class="fas fa-user-check"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="dashboard-card card-3">
+              <h5>Leaves Approved</h5>
+              <h2 id="stat_leaves">--</h2>
+              <i class="fas fa-plane-departure"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="dashboard-card card-4">
+              <h5>Total Payroll</h5>
+              <h2 id="stat_payroll">₹--</h2>
+              <i class="fas fa-wallet"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <div
+            class="card p-4 border-0 shadow-sm"
+            style="
+              background: #e0e7ff;
+              border-left: 5px solid var(--primary-color);
+            "
+          >
+            <div class="d-flex align-items-center">
+              <i class="fas fa-info-circle text-primary fs-4 me-3"></i>
+              <div>
+                <h6 class="fw-bold text-primary mb-1">System Status</h6>
+                <p class="mb-0 text-muted small">
+                  All systems are running smoothly. Use the sidebar to manage
+                  your organization.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="employees-section" class="d-none">
+        <div class="d-flex justify-content-end mb-4">
+          <button
+            class="btn btn-primary shadow-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#addEmpModal"
+          >
+            <i class="fas fa-plus me-2"></i> Add Employee
+          </button>
+        </div>
+
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-primary fw-bold">
+              <i class="fas fa-list-ul me-2"></i> Employee Directory
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-4">ID</th>
+                    <th>Name</th>
+                    <th>Joining Date</th>
+                    <th>Designation</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminEmpTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="attendance-section" class="d-none">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-clock me-2"></i>Attendance Logs
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <table class="table align-middle table-hover">
+              <thead>
+                <tr>
+                  <th class="ps-4">Employee</th>
+                  <th>Clock In / Out</th>
+                  <th>Status</th>
+                  <th>Overtime (OT)</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="leaves-section" class="d-none">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-calendar-check me-2"></i>Leave Requests
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <table class="table align-middle table-hover">
+              <thead>
+                <tr>
+                  <th class="ps-4">Employee</th>
+                  <th>Dates</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="leaveTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="payroll-section" class="d-none">
+        <div class="d-flex justify-content-end mb-3">
+          <button
+            class="btn btn-success shadow-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#payrollModal"
+          >
+            <i class="fas fa-play me-2"></i> Run Payroll
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-file-invoice-dollar me-2"></i>Salary History
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table align-middle table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-4">Employee</th>
+                    <th>Month</th>
+                    <th>Base</th>
+                    <th>Bonus/Ded</th>
+                    <th>Net Pay</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="payrollTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-section" class="d-none">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white fw-bold">
+            <i class="fas fa-cog me-2"></i> Salary Structure Configuration
+          </div>
+          <div class="card-body p-4">
+            <form id="salaryStructureForm" class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label text-muted small fw-bold"
+                  >DESIGNATION</label
+                >
+                <input
+                  type="text"
+                  id="set_desg"
+                  class="form-control"
+                  placeholder="e.g. SDE"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-muted small fw-bold"
+                  >BASE SALARY (₹)</label
+                >
+                <input
+                  type="number"
+                  id="set_base"
+                  class="form-control"
+                  placeholder="80000"
+                  required
+                />
+              </div>
+              <div class="col-md-2">
+                <label class="form-label text-muted small fw-bold"
+                  >TAX (%)</label
+                >
+                <input
+                  type="number"
+                  id="set_tax"
+                  class="form-control"
+                  placeholder="10"
+                  step="0.1"
+                  required
+                />
+              </div>
+              <div class="col-md-2">
+                <label class="form-label text-muted small fw-bold"
+                  >OT RATE (₹/HR)</label
+                >
+                <input
+                  type="number"
+                  id="set_ot"
+                  class="form-control"
+                  placeholder="500"
+                  required
+                />
+              </div>
+              <div class="col-md-2 align-self-end">
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fas fa-save me-2"></i> Save
+                </button>
+              </div>
+            </form>
+
+            <div class="mt-5">
+              <h6 class="text-primary fw-bold mb-3">Existing Rules</h6>
+              <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Designation</th>
+                    <th>Base Salary</th>
+                    <th>Tax Deduction</th>
+                    <th>Overtime Rate</th>
+                  </tr>
+                </thead>
+                <tbody id="structureTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addEmpModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Add New Employee</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="adminAddForm">
+              <div class="mb-3">
+                <label class="form-label text-muted small fw-bold"
+                  >FULL NAME</label
+                >
+                <input type="text" id="a_name" class="form-control" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">EMAIL</label>
+                <input
+                  type="email"
+                  id="a_email"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small fw-bold"
+                  >PASSWORD</label
+                >
+                <input
+                  type="password"
+                  id="a_password"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small fw-bold"
+                  >DESIGNATION</label
+                >
+                <input type="text" id="a_desg" class="form-control" required />
+              </div>
+              <div class="mb-4">
+                <label class="form-label text-muted small fw-bold">ROLE</label>
+                <select id="a_role" class="form-select">
+                  <option value="Employee">Employee</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 py-2">
+                Create Account
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="payrollModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title fw-bold">
+              <i class="fas fa-robot me-2"></i> Automated Payroll
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="payrollForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Employee</label>
+                  <select
+                    id="p_employee"
+                    class="form-select"
+                    required
+                    onchange="calculateAutoPayroll()"
+                  ></select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Select Month</label>
+                  <input
+                    type="month"
+                    id="p_month"
+                    class="form-control"
+                    required
+                    onchange="calculateAutoPayroll()"
+                  />
+                </div>
+
+                <div class="col-12 my-3">
+                  <div class="card bg-light border-0 p-3">
+                    <div class="row text-center">
+                      <div class="col-4 border-end">
+                        <small class="text-muted d-block mb-1">OT Hours</small>
+                        <h5 id="view_ot_hours" class="fw-bold mb-0">0</h5>
+                      </div>
+                      <div class="col-4 border-end">
+                        <small class="text-muted d-block mb-1">OT Rate</small>
+                        <h5 id="view_ot_rate" class="fw-bold mb-0">₹0</h5>
+                      </div>
+                      <div class="col-4">
+                        <small class="text-muted d-block mb-1">Leaves</small>
+                        <h5 id="view_leaves" class="fw-bold mb-0">0</h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">BASE SALARY</label>
+                  <input
+                    type="number"
+                    id="p_base"
+                    class="form-control fw-bold bg-white"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-success fw-bold"
+                    >BONUS (OT)</label
+                  >
+                  <input
+                    type="number"
+                    id="p_bonus"
+                    class="form-control text-success fw-bold bg-white"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-danger fw-bold"
+                    >DEDUCTIONS</label
+                  >
+                  <input
+                    type="number"
+                    id="p_deduction"
+                    class="form-control text-danger fw-bold bg-white"
+                    readonly
+                  />
+                  <small
+                    class="text-muted"
+                    style="font-size: 0.75rem"
+                    id="tax_hint"
+                  ></small>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <div
+                    class="d-flex justify-content-between align-items-center bg-success p-3 rounded text-white shadow-sm"
+                  >
+                    <h5 class="mb-0 fw-light">Net Payable:</h5>
+                    <h2 class="mb-0 fw-bold" id="view_net_pay">₹0</h2>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-dark w-100 mt-3 py-2 fw-bold"
+              >
+                Confirm Payment <i class="fas fa-check-circle ms-2"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editEmpModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-warning-subtle text-dark border-bottom-0">
+            <h5 class="modal-title fw-bold">Edit Employee Details</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="adminEditForm">
+              <input type="hidden" id="e_user_id" />
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted"
+                  >FULL NAME</label
+                >
+                <input type="text" id="e_name" class="form-control" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted">EMAIL</label>
+                <input
+                  type="email"
+                  id="e_email"
+                  class="form-control"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted"
+                  >DESIGNATION</label
+                >
+                <input type="text" id="e_desg" class="form-control" required />
+              </div>
+
+              <div class="row mb-4">
+                <div class="col-6">
+                  <label class="form-label small fw-bold text-muted"
+                    >ROLE</label
+                  >
+                  <select id="e_role" class="form-select">
+                    <option value="Employee">Employee</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-bold text-muted"
+                    >STATUS</label
+                  >
+                  <select id="e_status" class="form-select">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive (Ban)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-warning w-100 py-2 fw-bold">
+                Update Changes
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="logoutOverlay"
+      class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center"
+      style="z-index: 9999; backdrop-filter: blur(5px)"
+    >
+      <div class="bg-white p-5 rounded-4 shadow-lg text-center">
+        <div
+          class="spinner-border text-primary mb-3"
+          style="width: 3rem; height: 3rem"
+          role="status"
+        ></div>
+        <h3 class="fw-bold">Logging Out...</h3>
+        <p class="text-muted">See you soon!</p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>
