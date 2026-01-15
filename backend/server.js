@@ -1,16 +1,22 @@
+require("dotenv").config(); // <--- 1. NEW: Load env variables (Must be at the very top)
 const cron = require("node-cron");
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
-const fs = require("fs");           // REQUIRED for checking folders
-const multer = require("multer");   // REQUIRED for file uploads
+const fs = require("fs");
+const multer = require("multer");
 const db = require("./config/db");
 
 const app = express();
-const PORT = 3000;
 
+// 2. CRITICAL FIX: Use the system port OR 3000
+const PORT = process.env.PORT || 3000; 
+
+// --- MIDDLEWARE ---
+app.use(cors());
+app.use(bodyParser.json());
 // --- MIDDLEWARE ---
 app.use(cors());
 app.use(bodyParser.json());
