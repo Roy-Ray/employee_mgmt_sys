@@ -233,12 +233,14 @@ async function loadAttendanceLogs() {
       const dateObj = new Date(row.date).toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
-        year: "numeric"
+        year: "numeric",
       });
-      
+
       // Format time: ensure it's displayed as HH:MM format
-      const clockInTime = row.clock_in_time ? row.clock_in_time.substring(0, 5) : "--:--";
-      const clockOutTime = row.clock_out_time 
+      const clockInTime = row.clock_in_time
+        ? row.clock_in_time.substring(0, 5)
+        : "--:--";
+      const clockOutTime = row.clock_out_time
         ? row.clock_out_time.substring(0, 5)
         : '<span class="text-warning">Working...</span>';
 
@@ -504,20 +506,35 @@ async function loadAnalytics() {
   try {
     console.log("📊 Fetching analytics data...");
     const res = await fetch("/api/analytics");
-    
+
     if (!res.ok) {
       throw new Error(`API Error: ${res.status} ${res.statusText}`);
     }
-    
+
     const data = await res.json();
     console.log("✅ Analytics data received:", data);
-    
-    // Set values with fallback to 0 if undefined
-    document.getElementById("stat_total_emp").innerText = data.totalEmployees || 0;
-    document.getElementById("stat_present").innerText = data.presentToday || 0;
-    document.getElementById("stat_leaves").innerText = data.totalLeaves || 0;
+
+    // Set values with explicit type conversion to ensure numbers are displayed correctly
+    const totalEmp = Number(data.totalEmployees) || 0;
+    const presentNow = Number(data.presentToday) || 0;
+    const leavesApproved = Number(data.totalLeaves) || 0;
+    const payrollTotal = Number(data.totalPayroll) || 0;
+
+    console.log("Setting values:", {
+      totalEmp,
+      presentNow,
+      leavesApproved,
+      payrollTotal,
+    });
+
+    // Update DOM elements
+    document.getElementById("stat_total_emp").innerText = totalEmp;
+    document.getElementById("stat_present").innerText = presentNow;
+    document.getElementById("stat_leaves").innerText = leavesApproved;
     document.getElementById("stat_payroll").innerText =
-      "₹" + (data.totalPayroll || 0).toLocaleString();
+      "₹" + payrollTotal.toLocaleString();
+
+    console.log("✅ Analytics page updated successfully");
   } catch (err) {
     console.error("❌ Error loading analytics:", err);
     // Set default values on error
