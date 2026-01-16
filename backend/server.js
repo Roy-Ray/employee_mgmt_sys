@@ -14,6 +14,30 @@ const app = express();
 // 2. CRITICAL FIX: Use the system port OR 3000
 const PORT = process.env.PORT || 3000;
 
+// =============================================================
+// TIMEZONE UTILITY: Convert to Kolkata/IST (UTC+5:30)
+// =============================================================
+function getKolkataTime() {
+  const now = new Date();
+  // Convert UTC to IST (UTC+5:30)
+  const istTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  return istTime;
+}
+
+function formatTimeIST(date) {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+function formatDateIST(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // --- MIDDLEWARE ---
 app.use(cors());
 app.use(bodyParser.json());
@@ -255,17 +279,15 @@ app.post("/api/attendance", async (req, res) => {
         .json({ message: "You have already clocked in today!" });
     }
     
-    // Get current time from Node.js server
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const clockInTime = `${hours}:${minutes}:${seconds}`;
+    // Get current time in Kolkata/IST timezone
+    const istTime = getKolkataTime();
+    const clockInTime = formatTimeIST(istTime);
+    const istDate = formatDateIST(istTime);
     
     const sql =
-      "INSERT INTO Attendance (user_id, date, clock_in_time, status) VALUES (?, CURDATE(), ?, ?)";
-    await db.query(sql, [user_id, clockInTime, status]);
-    res.json({ message: "Attendance Marked", time: clockInTime });
+      "INSERT INTO Attendance (user_id, date, clock_in_time, status) VALUES (?, ?, ?, ?)";
+    await db.query(sql, [user_id, istDate, clockInTime, status]);
+    res.json({ message: "Attendance Marked", time: clockInTime, timezone: "IST (UTC+5:30)" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -274,25 +296,22 @@ app.post("/api/attendance", async (req, res) => {
 app.post("/api/clock-out", async (req, res) => {
   const { user_id } = req.body;
   try {
-    // Get current time from Node.js server (same timezone as frontend)
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const clockOutTime = `${hours}:${minutes}:${seconds}`;
+    // Get current time in Kolkata/IST timezone
+    const istTime = getKolkataTime();
+    const clockOutTime = formatTimeIST(istTime);
     
     let overtime = 0;
     const standardEnd = new Date();
     standardEnd.setHours(17, 0, 0); // 5:00 PM
 
-    if (now > standardEnd) {
-      const diffMs = now - standardEnd;
+    if (istTime > standardEnd) {
+      const diffMs = istTime - standardEnd;
       overtime = (diffMs / (1000 * 60 * 60)).toFixed(2);
     }
 
     const sql = `UPDATE Attendance SET clock_out_time = ?, overtime_hours = ?, status = 'Present', overtime_status = 'Pending' WHERE user_id = ? AND date = CURDATE()`;
     await db.query(sql, [clockOutTime, overtime, user_id]);
-    res.json({ message: "Clocked Out", overtime, time: clockOutTime });
+    res.json({ message: "Clocked Out", overtime, time: clockOutTime, timezone: "IST (UTC+5:30)" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -628,14 +647,18 @@ app.get("/api/payroll-context", async (req, res) => {
 });
 
 // =============================================================
-// 9. CRON JOBS
+// 9. CRON JOBS (Scheduled at 23:59 IST - End of day in Kolkata timezone)
 // =============================================================
 cron.schedule("59 23 * * *", async () => {
-  console.log("🔄 Running Auto Clock-Out Job...");
+  console.log("🔄 Running Auto Clock-Out Job at 23:59 IST...");
   try {
-    const sql = `UPDATE Attendance SET clock_out_time = '17:00:00', overtime_hours = 0 WHERE date = CURDATE() AND clock_out_time IS NULL`;
-    const [result] = await db.query(sql);
-    console.log(`✅ Auto-closed ${result.affectedRows} attendance records.`);
+    // Get today's date in IST
+    const istTime = getKolkataTime();
+    const istDate = formatDateIST(istTime);
+    
+    const sql = `UPDATE Attendance SET clock_out_time = '17:00:00', overtime_hours = 0 WHERE date = ? AND clock_out_time IS NULL`;
+    const [result] = await db.query(sql, [istDate]);
+    console.log(`✅ Auto-closed ${result.affectedRows} attendance records for ${istDate}.`);
   } catch (err) {
     console.error("❌ Auto Clock-Out Failed:", err);
   }

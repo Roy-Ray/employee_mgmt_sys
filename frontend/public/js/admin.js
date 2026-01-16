@@ -276,7 +276,7 @@ async function loadAttendanceLogs() {
                 <div class="fw-bold">${row.name}</div>
                 <small class="text-muted">${row.email}</small>
             </td>
-            <td><div class="fw-bold">${clockInTime} - ${clockOutTime}</div><small class="text-muted">${dateObj}</small></td>
+            <td><div class="fw-bold">${clockInTime} - ${clockOutTime} (IST)</div><small class="text-muted">${dateObj}</small></td>
             <td><span class="badge bg-success">${row.status}</span></td>
             <td>${otContent}</td>
         </tr>`;
