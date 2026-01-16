@@ -158,9 +158,8 @@ async function markAttendance() {
     if (res.ok) {
       document.getElementById("todayStatus").innerText = "Present";
       document.getElementById("todayStatus").classList.replace("text-primary", "text-success");
-      // Format time to HH:MM
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+      // Use the time from the server API response
+      const timeStr = data.time ? data.time.substring(0, 5) : new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
       document.getElementById("clockTime").innerText = "In: " + timeStr;
 
       btn.innerText = "🛑 Clock Out";
@@ -193,7 +192,11 @@ async function clockOut() {
     const data = await res.json();
 
     if (res.ok) {
-      alert(`✅ Clocked Out Successfully!\nOvertime: ${data.overtime} Hours`);
+      // Update the time display with server time
+      const timeStr = data.time ? data.time.substring(0, 5) : "--:--";
+      document.getElementById("clockTime").innerText = "Out: " + timeStr;
+      
+      alert(`✅ Clocked Out Successfully!\nTime: ${timeStr}\nOvertime: ${data.overtime} Hours`);
       btn.innerText = "✅ Done for Today";
       btn.classList.replace("btn-danger", "btn-success");
       btn.onclick = null;

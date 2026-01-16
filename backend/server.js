@@ -223,7 +223,7 @@ app.put("/api/employees/:id", async (req, res) => {
 app.get("/api/attendance/status/:id", async (req, res) => {
   try {
     const sql =
-      "SELECT DATE_FORMAT(clock_in_time, '%H:%i:%s') as clock_in_time, DATE_FORMAT(clock_out_time, '%H:%i:%s') as clock_out_time FROM Attendance WHERE user_id = ? AND date = CURDATE()";
+      "SELECT TIME_FORMAT(clock_in_time, '%H:%i:%s') as clock_in_time, TIME_FORMAT(clock_out_time, '%H:%i:%s') as clock_out_time FROM Attendance WHERE user_id = ? AND date = CURDATE()";
     const [rows] = await db.query(sql, [req.params.id]);
 
     if (rows.length === 0) {
@@ -254,10 +254,18 @@ app.post("/api/attendance", async (req, res) => {
         .status(400)
         .json({ message: "You have already clocked in today!" });
     }
+    
+    // Get current time from Node.js server
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const clockInTime = `${hours}:${minutes}:${seconds}`;
+    
     const sql =
-      "INSERT INTO Attendance (user_id, date, clock_in_time, status) VALUES (?, CURDATE(), DATE_FORMAT(NOW(), '%H:%i:%s'), ?)";
-    await db.query(sql, [user_id, status]);
-    res.json({ message: "Attendance Marked" });
+      "INSERT INTO Attendance (user_id, date, clock_in_time, status) VALUES (?, CURDATE(), ?, ?)";
+    await db.query(sql, [user_id, clockInTime, status]);
+    res.json({ message: "Attendance Marked", time: clockInTime });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -266,7 +274,13 @@ app.post("/api/attendance", async (req, res) => {
 app.post("/api/clock-out", async (req, res) => {
   const { user_id } = req.body;
   try {
+    // Get current time from Node.js server (same timezone as frontend)
     const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const clockOutTime = `${hours}:${minutes}:${seconds}`;
+    
     let overtime = 0;
     const standardEnd = new Date();
     standardEnd.setHours(17, 0, 0); // 5:00 PM
@@ -276,9 +290,9 @@ app.post("/api/clock-out", async (req, res) => {
       overtime = (diffMs / (1000 * 60 * 60)).toFixed(2);
     }
 
-    const sql = `UPDATE Attendance SET clock_out_time = DATE_FORMAT(NOW(), '%H:%i:%s'), overtime_hours = ?, status = 'Present', overtime_status = 'Pending' WHERE user_id = ? AND date = CURDATE()`;
-    await db.query(sql, [overtime, user_id]);
-    res.json({ message: "Clocked Out", overtime });
+    const sql = `UPDATE Attendance SET clock_out_time = ?, overtime_hours = ?, status = 'Present', overtime_status = 'Pending' WHERE user_id = ? AND date = CURDATE()`;
+    await db.query(sql, [clockOutTime, overtime, user_id]);
+    res.json({ message: "Clocked Out", overtime, time: clockOutTime });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -299,7 +313,7 @@ app.put("/api/attendance/overtime", async (req, res) => {
 
 app.get("/api/attendance-all", async (req, res) => {
   try {
-    const sql = `SELECT a.attendance_id, a.user_id, a.date, DATE_FORMAT(a.clock_in_time, '%H:%i:%s') as clock_in_time, DATE_FORMAT(a.clock_out_time, '%H:%i:%s') as clock_out_time, a.overtime_hours, a.overtime_status, a.status, u.name, u.email FROM Attendance a JOIN Users u ON a.user_id = u.user_id ORDER BY a.date DESC, a.clock_in_time DESC`;
+    const sql = `SELECT a.attendance_id, a.user_id, a.date, TIME_FORMAT(a.clock_in_time, '%H:%i:%s') as clock_in_time, TIME_FORMAT(a.clock_out_time, '%H:%i:%s') as clock_out_time, a.overtime_hours, a.overtime_status, a.status, u.name, u.email FROM Attendance a JOIN Users u ON a.user_id = u.user_id ORDER BY a.date DESC, a.clock_in_time DESC`;
     const [rows] = await db.query(sql);
     res.json(rows);
   } catch (err) {
