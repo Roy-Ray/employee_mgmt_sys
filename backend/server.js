@@ -49,6 +49,34 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
 });
 
+// DIAGNOSTIC ENDPOINT - Check database connectivity
+app.get("/api/diagnostic", async (req, res) => {
+  try {
+    const tables = [
+      "Users", "Attendance", "LeaveRequests", "Payroll", "SalaryStructure"
+    ];
+    
+    const results = {};
+    
+    for (let table of tables) {
+      try {
+        const [rows] = await db.query(`SELECT COUNT(*) as count FROM ${table}`);
+        results[table] = { exists: true, count: rows[0].count };
+      } catch (err) {
+        results[table] = { exists: false, error: err.message };
+      }
+    }
+    
+    res.json({
+      status: "Server Running",
+      database: results,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // =============================================================
 // 1. FILE UPLOAD CONFIGURATION (MULTER)
 // =============================================================
@@ -157,7 +185,7 @@ app.put("/api/employees/:id", async (req, res) => {
 // =============================================================
 app.get("/api/attendance/status/:id", async (req, res) => {
   try {
-    const sql = "SELECT * FROM Attendance WHERE user_id = ? AND date = CURDATE()";
+    const sql = "SELECT DATE_FORMAT(clock_in_time, '%H:%i:%s') as clock_in_time, DATE_FORMAT(clock_out_time, '%H:%i:%s') as clock_out_time FROM Attendance WHERE user_id = ? AND date = CURDATE()";
     const [rows] = await db.query(sql, [req.params.id]);
 
     if (rows.length === 0) {
@@ -181,7 +209,7 @@ app.post("/api/attendance", async (req, res) => {
     if (existing.length > 0) {
       return res.status(400).json({ message: "You have already clocked in today!" });
     }
-    const sql = "INSERT INTO Attendance (user_id, clock_in_time, status) VALUES (?, CURRENT_TIME(), ?)";
+    const sql = "INSERT INTO Attendance (user_id, date, clock_in_time, status) VALUES (?, CURDATE(), DATE_FORMAT(NOW(), '%H:%i:%s'), ?)";
     await db.query(sql, [user_id, status]);
     res.json({ message: "Attendance Marked" });
   } catch (err) {
@@ -193,7 +221,6 @@ app.post("/api/clock-out", async (req, res) => {
   const { user_id } = req.body;
   try {
     const now = new Date();
-    const currentTime = now.toTimeString().split(" ")[0];
     let overtime = 0;
     const standardEnd = new Date();
     standardEnd.setHours(17, 0, 0); // 5:00 PM
@@ -203,8 +230,8 @@ app.post("/api/clock-out", async (req, res) => {
       overtime = (diffMs / (1000 * 60 * 60)).toFixed(2);
     }
 
-    const sql = `UPDATE Attendance SET clock_out_time = ?, overtime_hours = ?, status = 'Present', overtime_status = 'Pending' WHERE user_id = ? AND date = CURDATE()`;
-    await db.query(sql, [currentTime, overtime, user_id]);
+    const sql = `UPDATE Attendance SET clock_out_time = DATE_FORMAT(NOW(), '%H:%i:%s'), overtime_hours = ?, status = 'Present', overtime_status = 'Pending' WHERE user_id = ? AND date = CURDATE()`;
+    await db.query(sql, [overtime, user_id]);
     res.json({ message: "Clocked Out", overtime });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -223,7 +250,7 @@ app.put("/api/attendance/overtime", async (req, res) => {
 
 app.get("/api/attendance-all", async (req, res) => {
   try {
-    const sql = `SELECT a.attendance_id, a.user_id, a.date, a.clock_in_time, a.clock_out_time, a.overtime_hours, a.overtime_status, a.status, u.name, u.email FROM Attendance a JOIN Users u ON a.user_id = u.user_id ORDER BY a.date DESC, a.clock_in_time DESC`;
+    const sql = `SELECT a.attendance_id, a.user_id, a.date, DATE_FORMAT(a.clock_in_time, '%H:%i:%s') as clock_in_time, DATE_FORMAT(a.clock_out_time, '%H:%i:%s') as clock_out_time, a.overtime_hours, a.overtime_status, a.status, u.name, u.email FROM Attendance a JOIN Users u ON a.user_id = u.user_id ORDER BY a.date DESC, a.clock_in_time DESC`;
     const [rows] = await db.query(sql);
     res.json(rows);
   } catch (err) {
@@ -337,7 +364,7 @@ app.get("/api/analytics", async (req, res) => {
     
     // Try to fetch present today count
     try {
-      const [attRows] = await db.query('SELECT COUNT(*) as count FROM Attendance WHERE date = CURDATE() AND status="Present"');
+      const [attRows] = await db.query('SELECT COUNT(DISTINCT user_id) as count FROM Attendance WHERE date = CURDATE() AND clock_in_time IS NOT NULL');
       presentToday = attRows?.[0]?.count || 0;
       console.log("✓ Present Today:", presentToday);
     } catch (attErr) {

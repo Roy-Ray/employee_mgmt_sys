@@ -230,9 +230,16 @@ async function loadAttendanceLogs() {
     tbody.innerHTML = "";
 
     data.forEach((row) => {
-      const dateObj = new Date(row.date).toLocaleDateString();
-      const clockOut = row.clock_out_time
-        ? row.clock_out_time
+      const dateObj = new Date(row.date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+      
+      // Format time: ensure it's displayed as HH:MM format
+      const clockInTime = row.clock_in_time ? row.clock_in_time.substring(0, 5) : "--:--";
+      const clockOutTime = row.clock_out_time 
+        ? row.clock_out_time.substring(0, 5)
         : '<span class="text-warning">Working...</span>';
 
       let otContent = '<span class="text-muted">-</span>';
@@ -267,7 +274,7 @@ async function loadAttendanceLogs() {
                 <div class="fw-bold">${row.name}</div>
                 <small class="text-muted">${row.email}</small>
             </td>
-            <td><div class="fw-bold">${row.clock_in_time} - ${clockOut}</div><small class="text-muted">${dateObj}</small></td>
+            <td><div class="fw-bold">${clockInTime} - ${clockOutTime}</div><small class="text-muted">${dateObj}</small></td>
             <td><span class="badge bg-success">${row.status}</span></td>
             <td>${otContent}</td>
         </tr>`;

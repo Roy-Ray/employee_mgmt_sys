@@ -158,7 +158,10 @@ async function markAttendance() {
     if (res.ok) {
       document.getElementById("todayStatus").innerText = "Present";
       document.getElementById("todayStatus").classList.replace("text-primary", "text-success");
-      document.getElementById("clockTime").innerText = new Date().toLocaleTimeString();
+      // Format time to HH:MM
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+      document.getElementById("clockTime").innerText = "In: " + timeStr;
 
       btn.innerText = "🛑 Clock Out";
       btn.classList.remove("btn-light", "text-success");
