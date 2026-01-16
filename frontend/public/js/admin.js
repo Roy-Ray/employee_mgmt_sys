@@ -495,15 +495,29 @@ document
 // Analytics
 async function loadAnalytics() {
   try {
+    console.log("📊 Fetching analytics data...");
     const res = await fetch("/api/analytics");
+    
+    if (!res.ok) {
+      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+    }
+    
     const data = await res.json();
-    document.getElementById("stat_total_emp").innerText = data.totalEmployees;
-    document.getElementById("stat_present").innerText = data.presentToday;
-    document.getElementById("stat_leaves").innerText = data.totalLeaves;
+    console.log("✅ Analytics data received:", data);
+    
+    // Set values with fallback to 0 if undefined
+    document.getElementById("stat_total_emp").innerText = data.totalEmployees || 0;
+    document.getElementById("stat_present").innerText = data.presentToday || 0;
+    document.getElementById("stat_leaves").innerText = data.totalLeaves || 0;
     document.getElementById("stat_payroll").innerText =
-      "₹" + data.totalPayroll.toLocaleString();
+      "₹" + (data.totalPayroll || 0).toLocaleString();
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error loading analytics:", err);
+    // Set default values on error
+    document.getElementById("stat_total_emp").innerText = "0";
+    document.getElementById("stat_present").innerText = "0";
+    document.getElementById("stat_leaves").innerText = "0";
+    document.getElementById("stat_payroll").innerText = "₹0";
   }
 }
 

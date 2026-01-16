@@ -44,6 +44,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
+// HEALTH CHECK ENDPOINT
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", message: "Server is running" });
+});
+
 // =============================================================
 // 1. FILE UPLOAD CONFIGURATION (MULTER)
 // =============================================================
@@ -313,19 +318,71 @@ app.post("/api/payroll", async (req, res) => {
 
 app.get("/api/analytics", async (req, res) => {
   try {
-    const [empRows] = await db.query('SELECT COUNT(*) as count FROM Users WHERE role="Employee"');
-    const [attRows] = await db.query('SELECT COUNT(*) as count FROM Attendance WHERE date = CURDATE() AND status="Present"');
-    const [leaveRows] = await db.query('SELECT COUNT(*) as count FROM LeaveRequests WHERE status="Approved"');
-    const [payRows] = await db.query("SELECT SUM(net_salary) as total FROM Payroll");
+    console.log("📊 Loading analytics data...");
+    
+    let totalEmployees = 0;
+    let presentToday = 0;
+    let totalLeaves = 0;
+    let totalPayroll = 0;
+    
+    // Try to fetch employee count
+    try {
+      const [empRows] = await db.query('SELECT COUNT(*) as count FROM Users WHERE role="Employee"');
+      totalEmployees = empRows?.[0]?.count || 0;
+      console.log("✓ Total Employees:", totalEmployees);
+    } catch (empErr) {
+      console.warn("⚠️ Could not fetch employee count:", empErr.message);
+      totalEmployees = 0;
+    }
+    
+    // Try to fetch present today count
+    try {
+      const [attRows] = await db.query('SELECT COUNT(*) as count FROM Attendance WHERE date = CURDATE() AND status="Present"');
+      presentToday = attRows?.[0]?.count || 0;
+      console.log("✓ Present Today:", presentToday);
+    } catch (attErr) {
+      console.warn("⚠️ Could not fetch attendance count:", attErr.message);
+      presentToday = 0;
+    }
+    
+    // Try to fetch approved leaves count
+    try {
+      const [leaveRows] = await db.query('SELECT COUNT(*) as count FROM LeaveRequests WHERE status="Approved"');
+      totalLeaves = leaveRows?.[0]?.count || 0;
+      console.log("✓ Total Leaves:", totalLeaves);
+    } catch (leaveErr) {
+      console.warn("⚠️ Could not fetch leave count:", leaveErr.message);
+      totalLeaves = 0;
+    }
+    
+    // Try to fetch total payroll
+    try {
+      const [payRows] = await db.query("SELECT SUM(net_salary) as total FROM Payroll");
+      totalPayroll = payRows?.[0]?.total || 0;
+      console.log("✓ Total Payroll:", totalPayroll);
+    } catch (payErr) {
+      console.warn("⚠️ Could not fetch payroll data:", payErr.message);
+      totalPayroll = 0;
+    }
 
-    res.json({
-      totalEmployees: empRows[0].count,
-      presentToday: attRows[0].count,
-      totalLeaves: leaveRows[0].count,
-      totalPayroll: payRows[0].total || 0,
-    });
+    const analyticsData = {
+      totalEmployees: totalEmployees,
+      presentToday: presentToday,
+      totalLeaves: totalLeaves,
+      totalPayroll: totalPayroll,
+    };
+    
+    console.log("✅ Analytics data prepared:", analyticsData);
+    res.json(analyticsData);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ Analytics Error:", err);
+    res.status(500).json({ 
+      error: err.message,
+      totalEmployees: 0,
+      presentToday: 0,
+      totalLeaves: 0,
+      totalPayroll: 0
+    });
   }
 });
 
