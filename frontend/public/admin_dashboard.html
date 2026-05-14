@@ -3,56 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <title>Admin Dashboard | SmartHR</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="css/style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+    </script>
+    <style type="text/tailwindcss">
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+      body { font-family: 'Inter', sans-serif; @apply bg-[#f8fafc] text-slate-800; }
+
+      /* Sleek Sidebar */
+      .sidebar { @apply w-[280px] h-screen fixed top-0 left-0 bg-[#0f172a] text-slate-300 pt-8 shadow-2xl z-50 flex flex-col border-r border-white/5; }
+      .sidebar h4 { @apply text-lg font-bold text-white tracking-widest uppercase border-b border-white/10 pb-6 mb-6 text-center mx-6; }
+      .sidebar a { @apply flex items-center px-8 py-4 text-slate-400 font-medium transition-all duration-200 border-l-4 border-transparent hover:bg-white/5 hover:text-white no-underline; }
+      .sidebar a i { @apply w-6 text-xl mr-4 text-center transition-transform duration-200; }
+      .sidebar a:hover i { @apply scale-110; }
+      .sidebar a.active { @apply bg-indigo-600/10 text-indigo-400 border-indigo-500 shadow-[inset_0_0_20px_rgba(79,70,229,0.05)]; }
+      .sidebar a.text-danger { @apply mt-auto mb-8 text-rose-500 hover:bg-rose-500/10 hover:text-rose-400 border-transparent hover:border-rose-500; }
+
+      .main-content { @apply ml-[280px] p-10 transition-all duration-300 min-h-screen; }
+
+      /* Stats Cards */
+      .dashboard-card { @apply relative overflow-hidden rounded-[2rem] p-8 text-white shadow-lg hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 min-h-[160px] border border-white/10; }
+      .dashboard-card h5 { @apply text-sm font-semibold uppercase tracking-wider opacity-80 mb-2; }
+      .dashboard-card h2 { @apply text-4xl font-bold mt-2; }
+      .card-1 { @apply bg-gradient-to-br from-indigo-500 to-indigo-700; }
+      .card-2 { @apply bg-gradient-to-br from-blue-500 to-blue-700; }
+      .card-3 { @apply bg-gradient-to-br from-amber-400 to-amber-600; }
+      .card-4 { @apply bg-gradient-to-br from-rose-400 to-rose-600; }
+      .dashboard-card i { @apply absolute right-4 -bottom-4 text-8xl opacity-20 -rotate-12 transition-transform duration-300; }
+      .dashboard-card:hover i { @apply rotate-0 scale-110; }
+
+      /* Bootstrap Overrides -> Tailwind Glass Components */
+      .card { @apply border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow duration-300 rounded-[2rem] bg-white overflow-hidden; }
+      .card-header { @apply bg-white border-b border-slate-100 py-6 px-8 font-bold text-slate-800 text-lg; }
+      .card-body { @apply p-8; }
+
+      .table { @apply w-full text-left border-collapse mb-0; }
+      .table th { @apply bg-slate-50/50 text-slate-400 text-[11px] uppercase tracking-widest py-5 px-6 font-semibold border-b border-slate-100; }
+      .table td { @apply py-5 px-6 text-sm text-slate-700 border-b border-slate-50 align-middle; }
+      .table-hover tbody tr:hover { @apply bg-slate-50/80; }
+
+      .form-control, .form-select { @apply rounded-2xl border-slate-200 bg-slate-50 hover:bg-white shadow-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 px-5 py-3.5 text-sm transition-all duration-200; }
+      .form-label { @apply text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-2; }
+
+      .btn { @apply inline-flex items-center justify-center px-5 py-3 font-semibold text-sm rounded-2xl shadow-sm transition-all duration-200; }
+      .btn-primary { @apply bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 hover:-translate-y-0.5; }
+      .btn-success { @apply bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5; }
+      .btn-warning { @apply bg-amber-500 border-amber-500 text-white hover:bg-amber-600 hover:shadow-lg hover:-translate-y-0.5; }
+
+      .modal-content { @apply rounded-[2.5rem] border-0 shadow-2xl overflow-hidden bg-white; }
+      .modal-header { @apply px-8 py-6 border-b border-slate-100; }
+      .modal-title { @apply text-xl font-bold text-slate-800; }
+      .modal-body { @apply p-8; }
+
+      /* Magic JS Class Interceptors */
+      .d-none { display: none !important; }
+      .badge { @apply inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border; }
+      .bg-danger-subtle { @apply bg-rose-50 text-rose-600 border-rose-200 !important; }
+      .text-danger { @apply text-rose-600 !important; }
+      .border-danger { @apply border-rose-200 !important; }
+      .bg-info-subtle { @apply bg-blue-50 text-blue-600 border-blue-200 !important; }
+      .text-info { @apply text-blue-600 !important; }
+      .border-info { @apply border-blue-200 !important; }
+      .bg-success { @apply bg-emerald-50 text-emerald-600 border-emerald-200 !important; }
+      .bg-warning { @apply bg-amber-50 text-amber-600 border-amber-200 !important; }
+      .bg-secondary { @apply bg-slate-100 text-slate-600 border-slate-200 !important; }
+      
+      .btn-outline-primary { @apply border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white bg-transparent; }
+      .btn-outline-success { @apply border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white bg-transparent; }
+      .btn-outline-danger { @apply border border-rose-600 text-rose-600 hover:bg-rose-600 hover:text-white bg-transparent; }
+
+      .text-muted { @apply text-slate-500; }
+      .fw-bold { @apply font-bold; }
+      .text-dark { @apply text-slate-900; }
+      .btn-group { @apply inline-flex shadow-sm rounded-xl; }
+      .btn-group .btn { @apply rounded-none first:rounded-l-xl last:rounded-r-xl border-r-0 last:border-r; }
+      .text-decoration-line-through { @apply line-through opacity-60; }
+    </style>
   </head>
   <body>
     <div class="sidebar">
-      <h4 class="text-center py-4 border-bottom">
-        <i class="fas fa-user-shield me-2"></i>Welcome Admin
-      </h4>
-
-      <a href="#" onclick="showSection('analytics')" class="active"
-        ><i class="fas fa-chart-pie"></i> Analytics</a
-      >
-      <a href="#" onclick="showSection('employees')"
-        ><i class="fas fa-users"></i> Employees</a
-      >
-      <a href="#" onclick="showSection('attendance')"
-        ><i class="fas fa-clock"></i> Attendance</a
-      >
-      <a href="#" onclick="showSection('leaves')"
-        ><i class="fas fa-calendar-alt"></i> Leave Mgmt</a
-      >
-      <a href="#" onclick="showSection('payroll')"
-        ><i class="fas fa-money-bill-wave"></i> Payroll</a
-      >
-      <a href="#" onclick="showSection('settings')"
-        ><i class="fas fa-sliders-h"></i> Settings</a
-      >
-
-      <a href="#" onclick="logout()" class="text-danger mt-5"
-        ><i class="fas fa-sign-out-alt"></i> Logout</a
-      >
+      <h4><i class="fas fa-layer-group text-indigo-500 mr-2"></i>SmartHR</h4>
+      <a href="#" onclick="showSection('analytics')" class="active"><i class="fas fa-chart-pie"></i> Analytics</a>
+      <a href="#" onclick="showSection('employees')"><i class="fas fa-users"></i> Employees</a>
+      <a href="#" onclick="showSection('attendance')"><i class="fas fa-clock"></i> Attendance</a>
+      <a href="#" onclick="showSection('leaves')"><i class="fas fa-calendar-alt"></i> Leave Mgmt</a>
+      <a href="#" onclick="showSection('payroll')"><i class="fas fa-money-bill-wave"></i> Payroll</a>
+      <a href="#" onclick="showSection('settings')"><i class="fas fa-sliders-h"></i> Settings</a>
+      <a href="#" onclick="logout()" class="text-danger mt-5"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
     <div class="main-content">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 id="pageTitle">Company Overview</h2>
-        <div class="text-muted small">
-          <i class="fas fa-calendar-day me-1"></i> Today is a great day
+      <div class="d-flex justify-content-between align-items-center mb-8">
+        <h2 id="pageTitle" class="text-3xl font-extrabold text-slate-800 tracking-tight">Company Overview</h2>
+        <div class="bg-white px-5 py-2.5 rounded-full shadow-sm border border-slate-100 text-slate-500 text-sm font-medium">
+          <i class="fas fa-calendar-day text-indigo-500 me-2"></i> Today is a great day
         </div>
       </div>
 
       <div id="analytics-section">
-        <div class="row g-4">
+        <div class="row g-5">
           <div class="col-md-3">
             <div class="dashboard-card card-1">
               <h5>Total Employees</h5>
@@ -82,58 +135,24 @@
             </div>
           </div>
         </div>
-
-        <div class="mt-5">
-          <div
-            class="card p-4 border-0 shadow-sm"
-            style="
-              background: #e0e7ff;
-              border-left: 5px solid var(--primary-color);
-            "
-          >
-            <div class="d-flex align-items-center">
-              <i class="fas fa-info-circle text-primary fs-4 me-3"></i>
-              <div>
-                <h6 class="fw-bold text-primary mb-1">System Status</h6>
-                <p class="mb-0 text-muted small">
-                  All systems are running smoothly. Use the sidebar to manage
-                  your organization.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div id="employees-section" class="d-none">
-        <div class="d-flex justify-content-end mb-4">
-          <button
-            class="btn btn-primary shadow-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#addEmpModal"
-          >
+        <div class="d-flex justify-content-end mb-6">
+          <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addEmpModal">
             <i class="fas fa-plus me-2"></i> Add Employee
           </button>
         </div>
-
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white py-3">
-            <h5 class="mb-0 text-primary fw-bold">
-              <i class="fas fa-list-ul me-2"></i> Employee Directory
-            </h5>
+            <h5 class="mb-0 text-indigo-600 fw-bold"><i class="fas fa-list-ul me-2"></i> Employee Directory</h5>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead>
                   <tr>
-                    <th class="ps-4">ID</th>
-                    <th>Name</th>
-                    <th>Joining Date</th>
-                    <th>Designation</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th class="text-end pe-4">Actions</th>
+                    <th class="ps-4">ID</th><th>Name</th><th>Joining Date</th><th>Designation</th><th>Role</th><th>Status</th><th class="text-end pe-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="adminEmpTable"></tbody>
@@ -145,21 +164,10 @@
 
       <div id="attendance-section" class="d-none">
         <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">
-              <i class="fas fa-clock me-2"></i>Attendance Logs
-            </h5>
-          </div>
+          <div class="card-header"><h5 class="mb-0"><i class="fas fa-clock me-2 text-indigo-500"></i>Attendance Logs</h5></div>
           <div class="card-body p-0">
             <table class="table align-middle table-hover">
-              <thead>
-                <tr>
-                  <th class="ps-4">Employee</th>
-                  <th>Clock In / Out</th>
-                  <th>Status</th>
-                  <th>Overtime (OT)</th>
-                </tr>
-              </thead>
+              <thead><tr><th class="ps-4">Employee</th><th>Clock In / Out</th><th>Status</th><th>Overtime (OT)</th></tr></thead>
               <tbody id="attendanceTable"></tbody>
             </table>
           </div>
@@ -168,22 +176,10 @@
 
       <div id="leaves-section" class="d-none">
         <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">
-              <i class="fas fa-calendar-check me-2"></i>Leave Requests
-            </h5>
-          </div>
+          <div class="card-header"><h5 class="mb-0"><i class="fas fa-calendar-check me-2 text-indigo-500"></i>Leave Requests</h5></div>
           <div class="card-body p-0">
             <table class="table align-middle table-hover">
-              <thead>
-                <tr>
-                  <th class="ps-4">Employee</th>
-                  <th>Dates</th>
-                  <th>Reason</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+              <thead><tr><th class="ps-4">Employee</th><th>Dates</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="leaveTable"></tbody>
             </table>
           </div>
@@ -191,34 +187,17 @@
       </div>
 
       <div id="payroll-section" class="d-none">
-        <div class="d-flex justify-content-end mb-3">
-          <button
-            class="btn btn-success shadow-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#payrollModal"
-          >
+        <div class="d-flex justify-content-end mb-6">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#payrollModal">
             <i class="fas fa-play me-2"></i> Run Payroll
           </button>
         </div>
         <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">
-              <i class="fas fa-file-invoice-dollar me-2"></i>Salary History
-            </h5>
-          </div>
+          <div class="card-header"><h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2 text-emerald-500"></i>Salary History</h5></div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table align-middle table-hover">
-                <thead class="table-light">
-                  <tr>
-                    <th class="ps-4">Employee</th>
-                    <th>Month</th>
-                    <th>Base</th>
-                    <th>Bonus/Ded</th>
-                    <th>Net Pay</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
+                <thead><tr><th class="ps-4">Employee</th><th>Month</th><th>Base</th><th>Bonus/Ded</th><th>Net Pay</th><th>Status</th></tr></thead>
                 <tbody id="payrollTable"></tbody>
               </table>
             </div>
@@ -227,79 +206,33 @@
       </div>
 
       <div id="settings-section" class="d-none">
-        <div class="card shadow-sm">
-          <div class="card-header bg-white fw-bold">
-            <i class="fas fa-cog me-2"></i> Salary Structure Configuration
-          </div>
-          <div class="card-body p-4">
-            <form id="salaryStructureForm" class="row g-3">
+        <div class="card">
+          <div class="card-header"><i class="fas fa-cog me-2 text-indigo-500"></i> Salary Configuration</div>
+          <div class="card-body">
+            <form id="salaryStructureForm" class="row g-4">
               <div class="col-md-3">
-                <label class="form-label text-muted small fw-bold"
-                  >DESIGNATION</label
-                >
-                <input
-                  type="text"
-                  id="set_desg"
-                  class="form-control"
-                  placeholder="e.g. SDE"
-                  required
-                />
+                <label class="form-label">Designation</label>
+                <input type="text" id="set_desg" class="form-control" placeholder="e.g. SDE" required />
               </div>
               <div class="col-md-3">
-                <label class="form-label text-muted small fw-bold"
-                  >BASE SALARY (₹)</label
-                >
-                <input
-                  type="number"
-                  id="set_base"
-                  class="form-control"
-                  placeholder="80000"
-                  required
-                />
+                <label class="form-label">Base Salary (₹)</label>
+                <input type="number" id="set_base" class="form-control" placeholder="80000" required />
               </div>
               <div class="col-md-2">
-                <label class="form-label text-muted small fw-bold"
-                  >TAX (%)</label
-                >
-                <input
-                  type="number"
-                  id="set_tax"
-                  class="form-control"
-                  placeholder="10"
-                  step="0.1"
-                  required
-                />
+                <label class="form-label">Tax (%)</label>
+                <input type="number" id="set_tax" class="form-control" placeholder="10" step="0.1" required />
               </div>
               <div class="col-md-2">
-                <label class="form-label text-muted small fw-bold"
-                  >OT RATE (₹/HR)</label
-                >
-                <input
-                  type="number"
-                  id="set_ot"
-                  class="form-control"
-                  placeholder="500"
-                  required
-                />
+                <label class="form-label">OT Rate (₹/HR)</label>
+                <input type="number" id="set_ot" class="form-control" placeholder="500" required />
               </div>
               <div class="col-md-2 align-self-end">
-                <button type="submit" class="btn btn-primary w-100">
-                  <i class="fas fa-save me-2"></i> Save
-                </button>
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save me-2"></i> Save</button>
               </div>
             </form>
-
-            <div class="mt-5">
-              <h6 class="text-primary fw-bold mb-3">Existing Rules</h6>
-              <table class="table table-sm table-bordered">
-                <thead class="table-light">
-                  <tr>
-                    <th>Designation</th>
-                    <th>Base Salary</th>
-                    <th>Tax Deduction</th>
-                    <th>Overtime Rate</th>
-                  </tr>
-                </thead>
+            <div class="mt-8">
+              <table class="table table-bordered">
+                <thead><tr><th>Designation</th><th>Base Salary</th><th>Tax Deduction</th><th>Overtime Rate</th></tr></thead>
                 <tbody id="structureTable"></tbody>
               </table>
             </div>
@@ -311,172 +244,17 @@
     <div class="modal fade" id="addEmpModal">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title fw-bold">Add New Employee</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title">Add New Employee</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <form id="adminAddForm">
-              <div class="mb-3">
-                <label class="form-label text-muted small fw-bold"
-                  >FULL NAME</label
-                >
-                <input type="text" id="a_name" class="form-control" required />
+              <div class="mb-4"><label class="form-label">Full Name</label><input type="text" id="a_name" class="form-control" required /></div>
+              <div class="mb-4"><label class="form-label">Email</label><input type="email" id="a_email" class="form-control" required /></div>
+              <div class="mb-4"><label class="form-label">Password</label><input type="password" id="a_password" class="form-control" required /></div>
+              <div class="mb-4"><label class="form-label">Designation</label><input type="text" id="a_desg" class="form-control" required /></div>
+              <div class="mb-6"><label class="form-label">Role</label>
+                <select id="a_role" class="form-select"><option value="Employee">Employee</option><option value="Admin">Admin</option></select>
               </div>
-              <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">EMAIL</label>
-                <input
-                  type="email"
-                  id="a_email"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label class="form-label text-muted small fw-bold"
-                  >PASSWORD</label
-                >
-                <input
-                  type="password"
-                  id="a_password"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label class="form-label text-muted small fw-bold"
-                  >DESIGNATION</label
-                >
-                <input type="text" id="a_desg" class="form-control" required />
-              </div>
-              <div class="mb-4">
-                <label class="form-label text-muted small fw-bold">ROLE</label>
-                <select id="a_role" class="form-select">
-                  <option value="Employee">Employee</option>
-                  <option value="Admin">Admin</option>
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary w-100 py-2">
-                Create Account
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="payrollModal">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-success text-white">
-            <h5 class="modal-title fw-bold">
-              <i class="fas fa-robot me-2"></i> Automated Payroll
-            </h5>
-            <button
-              type="button"
-              class="btn-close btn-close-white"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="payrollForm">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label">Employee</label>
-                  <select
-                    id="p_employee"
-                    class="form-select"
-                    required
-                    onchange="calculateAutoPayroll()"
-                  ></select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Select Month</label>
-                  <input
-                    type="month"
-                    id="p_month"
-                    class="form-control"
-                    required
-                    onchange="calculateAutoPayroll()"
-                  />
-                </div>
-
-                <div class="col-12 my-3">
-                  <div class="card bg-light border-0 p-3">
-                    <div class="row text-center">
-                      <div class="col-4 border-end">
-                        <small class="text-muted d-block mb-1">OT Hours</small>
-                        <h5 id="view_ot_hours" class="fw-bold mb-0">0</h5>
-                      </div>
-                      <div class="col-4 border-end">
-                        <small class="text-muted d-block mb-1">OT Rate</small>
-                        <h5 id="view_ot_rate" class="fw-bold mb-0">₹0</h5>
-                      </div>
-                      <div class="col-4">
-                        <small class="text-muted d-block mb-1">Leaves</small>
-                        <h5 id="view_leaves" class="fw-bold mb-0">0</h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label class="form-label small text-muted">BASE SALARY</label>
-                  <input
-                    type="number"
-                    id="p_base"
-                    class="form-control fw-bold bg-white"
-                    readonly
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label small text-success fw-bold"
-                    >BONUS (OT)</label
-                  >
-                  <input
-                    type="number"
-                    id="p_bonus"
-                    class="form-control text-success fw-bold bg-white"
-                    readonly
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label small text-danger fw-bold"
-                    >DEDUCTIONS</label
-                  >
-                  <input
-                    type="number"
-                    id="p_deduction"
-                    class="form-control text-danger fw-bold bg-white"
-                    readonly
-                  />
-                  <small
-                    class="text-muted"
-                    style="font-size: 0.75rem"
-                    id="tax_hint"
-                  ></small>
-                </div>
-
-                <div class="col-12 mt-4">
-                  <div
-                    class="d-flex justify-content-between align-items-center bg-success p-3 rounded text-white shadow-sm"
-                  >
-                    <h5 class="mb-0 fw-light">Net Payable:</h5>
-                    <h2 class="mb-0 fw-bold" id="view_net_pay">₹0</h2>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                class="btn btn-dark w-100 mt-3 py-2 fw-bold"
-              >
-                Confirm Payment <i class="fas fa-check-circle ms-2"></i>
-              </button>
+              <button type="submit" class="btn btn-primary w-100">Create Account</button>
             </form>
           </div>
         </div>
@@ -486,85 +264,66 @@
     <div class="modal fade" id="editEmpModal">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header bg-warning-subtle text-dark border-bottom-0">
-            <h5 class="modal-title fw-bold">Edit Employee Details</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title">Edit Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <form id="adminEditForm">
               <input type="hidden" id="e_user_id" />
-
-              <div class="mb-3">
-                <label class="form-label small fw-bold text-muted"
-                  >FULL NAME</label
-                >
-                <input type="text" id="e_name" class="form-control" required />
+              <div class="mb-4"><label class="form-label">Full Name</label><input type="text" id="e_name" class="form-control" required /></div>
+              <div class="mb-4"><label class="form-label">Email</label><input type="email" id="e_email" class="form-control" required /></div>
+              <div class="mb-4"><label class="form-label">Designation</label><input type="text" id="e_desg" class="form-control" required /></div>
+              <div class="row mb-6">
+                <div class="col-6"><label class="form-label">Role</label><select id="e_role" class="form-select"><option value="Employee">Employee</option><option value="Admin">Admin</option></select></div>
+                <div class="col-6"><label class="form-label">Status</label><select id="e_status" class="form-select"><option value="Active">Active</option><option value="Inactive">Inactive (Ban)</option></select></div>
               </div>
-
-              <div class="mb-3">
-                <label class="form-label small fw-bold text-muted">EMAIL</label>
-                <input
-                  type="email"
-                  id="e_email"
-                  class="form-control"
-                  required
-                />
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label small fw-bold text-muted"
-                  >DESIGNATION</label
-                >
-                <input type="text" id="e_desg" class="form-control" required />
-              </div>
-
-              <div class="row mb-4">
-                <div class="col-6">
-                  <label class="form-label small fw-bold text-muted"
-                    >ROLE</label
-                  >
-                  <select id="e_role" class="form-select">
-                    <option value="Employee">Employee</option>
-                    <option value="Admin">Admin</option>
-                  </select>
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold text-muted"
-                    >STATUS</label
-                  >
-                  <select id="e_status" class="form-select">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive (Ban)</option>
-                  </select>
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-warning w-100 py-2 fw-bold">
-                Update Changes
-              </button>
+              <button type="submit" class="btn btn-warning w-100">Update Changes</button>
             </form>
           </div>
         </div>
       </div>
     </div>
 
-    <div
-      id="logoutOverlay"
-      class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center"
-      style="z-index: 9999; backdrop-filter: blur(5px)"
-    >
-      <div class="bg-white p-5 rounded-4 shadow-lg text-center">
-        <div
-          class="spinner-border text-primary mb-3"
-          style="width: 3rem; height: 3rem"
-          role="status"
-        ></div>
-        <h3 class="fw-bold">Logging Out...</h3>
-        <p class="text-muted">See you soon!</p>
+    <div class="modal fade" id="payrollModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title"><i class="fas fa-robot text-indigo-500 me-2"></i> Auto Payroll</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <form id="payrollForm">
+              <div class="row g-4">
+                <div class="col-md-6"><label class="form-label">Employee</label><select id="p_employee" class="form-select" required onchange="calculateAutoPayroll()"></select></div>
+                <div class="col-md-6"><label class="form-label">Month</label><input type="month" id="p_month" class="form-control" required onchange="calculateAutoPayroll()" /></div>
+                
+                <div class="col-12 my-2">
+                  <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex justify-around text-center shadow-inner">
+                    <div><span class="text-xs text-slate-400 font-bold uppercase tracking-wider">OT Hours</span><h5 id="view_ot_hours" class="text-2xl font-bold mt-1 text-slate-800">0</h5></div>
+                    <div class="w-px bg-slate-200"></div>
+                    <div><span class="text-xs text-slate-400 font-bold uppercase tracking-wider">OT Rate</span><h5 id="view_ot_rate" class="text-2xl font-bold mt-1 text-slate-800">₹0</h5></div>
+                    <div class="w-px bg-slate-200"></div>
+                    <div><span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Leaves</span><h5 id="view_leaves" class="text-2xl font-bold mt-1 text-slate-800">0</h5></div>
+                  </div>
+                </div>
+
+                <div class="col-md-4"><label class="form-label">Base Salary</label><input type="number" id="p_base" class="form-control font-bold" readonly /></div>
+                <div class="col-md-4"><label class="form-label text-emerald-600">Bonus (OT)</label><input type="number" id="p_bonus" class="form-control text-emerald-600 font-bold" readonly /></div>
+                <div class="col-md-4"><label class="form-label text-rose-600">Deductions</label><input type="number" id="p_deduction" class="form-control text-rose-600 font-bold" readonly /><small id="tax_hint" class="text-[10px] font-medium text-slate-400 mt-1 block"></small></div>
+
+                <div class="col-12 mt-6">
+                  <div class="bg-indigo-600 p-6 rounded-2xl text-white shadow-lg flex justify-between items-center">
+                    <h5 class="mb-0 font-medium text-indigo-100 uppercase tracking-widest text-sm">Net Payable</h5>
+                    <h2 class="mb-0 text-3xl font-extrabold" id="view_net_pay">₹0</h2>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 mt-6"><i class="fas fa-check-circle me-2"></i> Confirm Payment</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="logoutOverlay" class="d-none fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] flex justify-center items-center">
+      <div class="bg-white p-10 rounded-[2rem] shadow-2xl text-center">
+        <div class="spinner-border text-indigo-600 mb-4 h-10 w-10" role="status"></div>
+        <h3 class="font-extrabold text-2xl text-slate-800">Logging Out...</h3>
       </div>
     </div>
 

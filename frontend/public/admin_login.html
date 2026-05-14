@@ -3,140 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login | SmartHR</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="css/style.css" />
-    <style>
-      body {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    <title>Admin Login | SmartHR Enterprise</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: { corporate: { 900: '#0B132B', 800: '#1C2541', blue: '#3A506B', light: '#F0F4F8' } }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+      
+      body { font-family: 'Inter', sans-serif; @apply bg-corporate-900 min-h-screen flex items-center justify-center relative overflow-hidden; }
+      
+      /* Subtle corporate background pattern */
+      body::before {
+        content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(58,80,107,0.1) 0%, rgba(11,19,43,0) 70%); z-index: 0; pointer-events: none;
       }
 
-      .login-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 40px;
-        width: 100%;
-        max-width: 400px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        animation: fadeInUp 0.6s ease-out;
-        position: relative;
-        overflow: hidden;
-      }
-
-      /* Blue top border for Admin */
-      .login-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 6px;
-        background: #0d6efd;
-      }
-
-      .icon-circle {
-        width: 70px;
-        height: 70px;
-        background-color: #e7f1ff;
-        color: #0d6efd;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        margin: 0 auto 20px auto;
-      }
-
-      .form-control {
-        border-radius: 10px;
-        padding: 12px 15px;
-        border: 1px solid #dee2e6;
-        background-color: #f8f9fa;
-      }
-      .form-control:focus {
-        background-color: #fff;
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
-      }
-
-      .btn-login {
-        width: 100%;
-        padding: 12px;
-        border-radius: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        background: #0d6efd;
-        border: none;
-        color: white;
-        transition: all 0.3s;
-      }
-      .btn-login:hover {
-        background: #0b5ed7;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
-      }
-
-      .back-link {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        color: #6c757d;
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover { color: #0d6efd; }
-
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
+      .login-container { @apply w-full max-w-md p-6 z-10; }
+      
+      .login-card { @apply bg-white rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-10 border-t-4 border-blue-600 relative overflow-hidden; }
+      
+      .form-label { @apply block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2; }
+      .form-control { @apply w-full rounded-md border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-800 transition-all focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none; }
+      
+      .btn-login { @apply w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-md transition-colors shadow-md flex justify-center items-center gap-2; }
+      
+      .back-link { @apply flex items-center justify-center mt-6 text-sm text-slate-500 hover:text-blue-600 transition-colors font-medium; }
     </style>
   </head>
   <body>
     
-    <div class="login-card">
-      <div class="icon-circle">
-        <i class="fas fa-user-shield"></i>
+    <div class="login-container">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-white tracking-wide">SmartHR <span class="text-blue-400">Enterprise</span></h1>
+        <p class="text-slate-400 text-sm mt-1">Secure Administrator Access</p>
       </div>
-      <h3 class="text-center fw-bold mb-4" style="color: #1f2937;">Admin Login</h3>
-      
-      <form id="loginForm">
-        <div class="mb-3">
-          <label class="form-label text-muted small fw-bold">EMAIL ADDRESS</label>
-          <input type="email" id="email" class="form-control" placeholder="admin@smart.com" required>
-        </div>
-        <div class="mb-4">
-          <label class="form-label text-muted small fw-bold">PASSWORD</label>
-          <input type="password" id="password" class="form-control" placeholder="••••••" required>
+
+      <div class="login-card">
+        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 shadow-sm border border-blue-100">
+          <i class="fas fa-shield-alt"></i>
         </div>
         
-        <button type="submit" class="btn btn-login">
-          Sign In
-        </button>
-      </form>
+        <form id="loginForm">
+          <div class="mb-5">
+            <label class="form-label">Corporate Email</label>
+            <input type="email" id="email" class="form-control" placeholder="admin@smarthr.com" required>
+          </div>
+          <div class="mb-6">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+          </div>
+          
+          <button type="submit" class="btn-login">
+            Authenticate <i class="fas fa-arrow-right text-xs"></i>
+          </button>
+        </form>
 
-      <a href="index.html" class="back-link">
-        <i class="fas fa-arrow-left me-1"></i> Back to Portal Selection
-      </a>
+        <a href="index.html" class="back-link">
+          <i class="fas fa-arrow-left me-2"></i> Return to Portal Selection
+        </a>
+      </div>
     </div>
 
-    <div id="loginOverlay" class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center" style="z-index: 9999;">
-        <div class="bg-white p-4 rounded shadow-lg text-center">
-            <div class="spinner-border text-primary mb-3" role="status"></div>
-            <h3 class="fw-bold">Logging In...</h3>
-            <p class="text-muted">Verifying Credentials</p>
+    <div id="loginOverlay" class="d-none fixed inset-0 bg-corporate-900/90 backdrop-blur-sm z-[9999] flex justify-center items-center">
+        <div class="bg-white p-8 rounded-lg shadow-2xl text-center border-t-4 border-blue-600 w-80">
+            <div class="spinner-border text-blue-600 mb-4 h-8 w-8" role="status"></div>
+            <h3 class="font-bold text-slate-800 text-lg">Authenticating...</h3>
+            <p class="text-slate-500 text-sm mt-1">Establishing secure connection</p>
         </div>
     </div>
 
@@ -156,11 +100,9 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // Show Overlay
                     document.getElementById('loginOverlay').classList.remove('d-none');
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    // 600ms Delay
                     setTimeout(() => {
                         window.location.href = 'admin_dashboard.html';
                     }, 400);
