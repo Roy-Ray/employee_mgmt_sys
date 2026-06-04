@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Select Portal | SmartHR</title>
+    <title>SmartHR | Enterprise Employee Management</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,65 +12,132 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/style.css" />
 
     <style>
-      /* OVERRIDE: Specific styles for the landing page */
-      
+      /* OVERRIDE: Specific styles for the SaaS landing page */
       body {
-        /* Keeping your original background */
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+        overflow-x: hidden;
+      }
+
+      /* HERO SECTION */
+      .hero-section {
         background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        min-height: 100vh;
+        min-height: 85vh;
+        color: white;
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: 80px 0;
+      }
+
+      /* Adding a subtle background pattern overlay */
+      .hero-section::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.1) 1px,
+          transparent 1px
+        );
+        background-size: 30px 30px;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .hero-title {
+        font-weight: 800;
+        font-size: 3.5rem;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero-subtitle {
+        font-size: 1.2rem;
+        font-weight: 300;
+        opacity: 0.9;
+        margin-bottom: 40px;
+      }
+
+      /* GLASSMORPHISM DASHBOARD MOCKUP */
+      .hero-mockup {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+        transition: transform 0.5s ease;
+      }
+      .hero-mockup:hover {
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+      }
+      .hero-mockup img {
+        width: 100%;
+        border-radius: 10px;
+      }
+
+      /* FEATURES SECTION */
+      .features-section {
+        padding: 100px 0;
+        background: white;
+      }
+
+      .feature-card {
+        padding: 30px;
+        border-radius: 16px;
+        background: #f8fafc;
+        border: none;
+        transition: transform 0.3s ease;
+        height: 100%;
+      }
+      .feature-card:hover {
+        transform: translateY(-10px);
+        background: white;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      }
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: #e0e7ff;
+        color: #4f46e5;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
       }
 
-      .landing-container {
-        width: 100%;
-        max-width: 1000px;
-        padding: 20px;
-        animation: fadeInUp 0.8s ease-out;
+      /* PORTAL/LOGIN SECTION (Your original cards) */
+      .portal-section {
+        padding: 100px 0;
+        background: #f1f5f9;
       }
 
-      .main-title {
-        color: white;
-        font-weight: 800;
-        font-size: 2.8rem;
-        margin-bottom: 60px;
-        text-align: center;
-        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        letter-spacing: 0.5px;
-      }
-
-      /* CARD STYLING */
       .portal-card {
-        background: rgba(255, 255, 255, 0.98);
+        background: #ffffff;
         border-radius: 20px;
         padding: 50px 30px;
         border: none;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        
-        /* FLEX MAGIC FOR EQUAL HEIGHT & ALIGNMENT */
-        height: 100%; 
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
         position: relative;
         overflow: hidden;
       }
-
       .portal-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
       }
-
-      /* Colored top border */
       .portal-card::before {
         content: "";
         position: absolute;
@@ -79,101 +146,178 @@
         width: 100%;
         height: 6px;
       }
-      .card-admin::before { background: #0d6efd; }
-      .card-emp::before { background: #198754; }
-
-      .portal-card h3 {
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 15px;
-        font-size: 1.5rem;
+      .card-admin::before {
+        background: #4f46e5;
+      }
+      .card-emp::before {
+        background: #10b981;
       }
 
-      .portal-card p {
-        color: #6b7280;
-        font-size: 1rem;
-        margin-bottom: 40px; /* Space before button */
-        line-height: 1.6;
-      }
-
-      /* BUTTON STYLING */
       .btn-custom {
-        width: 100%;
-        padding: 14px;
-        border-radius: 12px;
+        padding: 12px 30px;
+        border-radius: 10px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        font-size: 0.9rem;
+        letter-spacing: 0.5px;
         transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-      }
-
-      .btn-outline-admin {
-        border: 2px solid #0d6efd;
-        color: #0d6efd;
-      }
-      .btn-outline-admin:hover {
-        background: #0d6efd;
-        color: white;
-        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
-      }
-
-      .btn-outline-emp {
-        border: 2px solid #198754;
-        color: #198754;
-      }
-      .btn-outline-emp:hover {
-        background: #198754;
-        color: white;
-        box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
-      }
-
-      /* Animation */
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
       }
     </style>
   </head>
   <body>
-    
-    <div class="landing-container">
-      <h1 class="main-title">Welcome to Employee Management Portal</h1>
-
-      <div class="row g-4 justify-content-center align-items-stretch">
-        
-        <div class="col-md-5 col-sm-10 d-flex">
-          <div class="portal-card card-admin">
-            <div class="card-content">
-              <h3>Admin Portal</h3>
-              <p>
-                Manage Employees, Payroll & Analytics
-              </p>
-            </div>
-            <a href="admin_login.html" class="btn-custom btn-outline-admin">
-              Login as Admin
+    <section class="hero-section">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6" data-aos="fade-right">
+            <span
+              class="badge bg-light text-primary mb-3 px-3 py-2 rounded-pill"
+              >Now Live</span
+            >
+            <h1 class="hero-title">Modernize Your Workforce Management</h1>
+            <p class="hero-subtitle">
+              SmartHR is the all-in-one platform to automate payroll, track
+              attendance, and empower your employees. Built for fast-growing
+              organizations.
+            </p>
+            <a
+              href="#login-portals"
+              class="btn btn-light btn-custom text-primary me-3 mb-3"
+            >
+              Explore Live Demo
+            </a>
+            <a href="#features" class="btn btn-outline-light btn-custom mb-3">
+              View Features
             </a>
           </div>
-        </div>
-
-        <div class="col-md-5 col-sm-10 d-flex">
-          <div class="portal-card card-emp">
-            <div class="card-content">
-              <h3>Employee Portal</h3>
-              <p>
-                Mark Attendance, Apply Leave & View Salary
-              </p>
+          <div
+            class="col-lg-6 d-none d-lg-block"
+            data-aos="fade-left"
+            data-aos-delay="200"
+          >
+            <div class="hero-mockup">
+              <img
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
+                alt="Dashboard Preview"
+              />
             </div>
-            <a href="emp_login.html" class="btn-custom btn-outline-emp">
-              Login as Employee
-            </a>
           </div>
         </div>
-
       </div>
-    </div>
+    </section>
 
+    <section id="features" class="features-section">
+      <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+          <h2 class="fw-bold">Everything you need to manage your team</h2>
+          <p class="text-muted">
+            Powerful tools designed to save HR hours of administrative work.
+          </p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+              <h4>Real-Time Analytics</h4>
+              <p class="text-muted">
+                Monitor employee performance, attendance trends, and payroll
+                expenses from a single dashboard.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <h4>Leave Management</h4>
+              <p class="text-muted">
+                Employees can request time off instantly, with automated
+                approval workflows for managers.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="fas fa-wallet"></i></div>
+              <h4>Automated Payroll</h4>
+              <p class="text-muted">
+                Generate error-free salary slips based on tracked hours and
+                approved leaves in one click.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="login-portals" class="portal-section">
+      <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+          <h2 class="fw-bold">Ready to dive in?</h2>
+          <p class="text-muted">Select your portal to access the system.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          <div
+            class="col-md-5 col-lg-4"
+            data-aos="zoom-in"
+            data-aos-delay="100"
+          >
+            <div
+              class="portal-card card-admin text-center d-flex flex-column h-100"
+            >
+              <div class="mb-4">
+                <i class="fas fa-user-shield fs-1 text-primary mb-3"></i>
+                <h3 class="fw-bold">Admin Portal</h3>
+                <p class="text-muted">
+                  Manage Employees, Payroll & System Analytics
+                </p>
+              </div>
+              <div class="mt-auto">
+                <a
+                  href="admin_login.html"
+                  class="btn btn-outline-primary btn-custom w-100"
+                  >Login as Admin</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="col-md-5 col-lg-4"
+            data-aos="zoom-in"
+            data-aos-delay="200"
+          >
+            <div
+              class="portal-card card-emp text-center d-flex flex-column h-100"
+            >
+              <div class="mb-4">
+                <i class="fas fa-users fs-1 text-success mb-3"></i>
+                <h3 class="fw-bold">Employee Portal</h3>
+                <p class="text-muted">
+                  Mark Attendance, Apply Leave & View Salary
+                </p>
+              </div>
+              <div class="mt-auto">
+                <a
+                  href="emp_login.html"
+                  class="btn btn-outline-success btn-custom w-100"
+                  >Login as Employee</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      // Initialize Scroll Animations
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100,
+      });
+    </script>
   </body>
 </html>
