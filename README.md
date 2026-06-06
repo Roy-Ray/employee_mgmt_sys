@@ -3,16 +3,25 @@
 A full-stack, cloud-based Employee Management System designed to easily manage employee records, track details, and streamline HR operations. The application provides a user-friendly dashboard for performing essential administrative tasks efficiently.
 
 ## 🚀 Live Demo
-**Access the deployed application here:** [Live Deployment on Render](https://library-management-full-stack-9s36.onrender.com/)
+**Access the deployed application here:** [Live Deployment on Render](https://employee-mgmt-sys-1.onrender.com/)
+
+#
+to log in the system use this id and password in the admin panel :
+ID : admin@smart.com  
+Password :123
+to log in the system use this id and password in the Employee panel :
+ID : sourav@smart.com
+Password :12345
 
 ---
 
 ## ✨ Features
-* **Interactive Dashboard:** A clean and responsive UI to view employee statistics and data.
-* **CRUD Operations:** Easily Add, View, Update, and Delete employee records.
-* **File Uploads:** Securely upload and store employee files or profile pictures (handled via the `uploads` directory).
-* **Cloud Database:** Reliable and fast data storage powered by a managed MySQL database on **Aiven Cloud**.
-* **Fully Deployed:** Application seamlessly hosted on **Render** for high availability.
+
+* **Interactive Dashboard:** A clean, responsive, and intuitive user interface designed for real-time visualization of employee statistics and organizational data.
+* **Complete Employee Management (CRUD):** Streamlined administrative controls to seamlessly add, view, update, and delete employee records.
+* **Secure File Handling:** Robust functionality for uploading and managing employee assets, such as profile pictures and essential documents.
+* **Cloud-Powered Database:** Ensures fast, reliable, and secure data storage utilizing a managed **MySQL** database hosted on **Aiven Cloud**.
+* **Seamless Deployment:** Fully hosted and live on **Render**, ensuring high availability and reliable access to the application.
 
 ---
 
